@@ -5,23 +5,72 @@ Firefox add-on to expand keywords in bookmark URLs. Modern alternative to [Keywo
 
 ## Usage
 
-Placeholder | Replacement
-------------|-------------------------------------------
-`%s`        | The currently selected text (escaped)
-`%S`        | The currently selected text (unescaped)
-`%l`        | The current tab's location URL (escaped)
-`%L`        | The current tab's location URL (unescaped)
+Embed directives of the form `%{ke:<keyword>[:<options>]}` in your bookmark URLs.
 
-If no text is selected, bookmarks with `%s`/`%S` load the site's homepage.
+### Keywords
+
+Possible keywords are:
+
+Keyword     | Replacement
+------------|------------
+`selection` | The currently selected text (if no text is selected, the fallback option applies)
+`location`  | The current tab's location URL
+`origin`    | The current tab's [origin](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/origin)
+`domain`    | The current tab's [domain](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/hostname)
+`host`      | The current tab's [host](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/host)
+`path`      | The current tab's [path](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/pathname)
+`query`     | The current tab's [query](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/search)
+`directory` | The current tab's path without the last component
+
+### Options
+
+Options are of the form `<option>[=<value>]`, where `<value>` defaults to `true`. Multiple options are separated by `,`.
+
+Option     | Description
+-----------|------------
+`escape`   | Whether the replacement value should be [encoded as a URI component](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) (**default**, specify `escape=false` if you need the unescaped value)
+`fallback` | Which page to load if no text is selected (only applies to the `selection` keyword); possible values are: [`origin`](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/origin) (the site's homepage, **default**), `path` (the URL without the query parameters), `directory` (the path without the last component)
+
+### Keyword searches compatibility
+
+The following directives are supported for compatibility with [keyword searches](http://kb.mozillazine.org/Using_keyword_searches). Options are not allowed.
+
+Directive | Equivalent
+----------|-------------------------------------------
+`%s`      | `%{ke:selection}`
+`%S`      | `%{ke:selection:escape=false}`
 
 
 ## Examples
 
-Bookmark                                 | Selection/Location | Result
------------------------------------------|--------------------|------------------------------------
-https://google.com/search?q=%s           | keyword            | https://google.com/search?q=keyword
-https://google.com/search?q=%s           |                    | https://google.com
-http://validator.w3.org/checklink?uri=%l | http://example.com | http://validator.w3.org/checklink?uri=http%3A%2F%2Fexample.com
+Bookmark                                                        | Selection/Location         | Result
+----------------------------------------------------------------|----------------------------|-------
+https://google.com/search?q=%{ke:selection}                     | keyword selection          | https://google.com/search?q=keyword%20selection
+https://google.com/search?q=%{ke:selection:escape=false}        | keyword selection          | https://google.com/search?q=keyword selection
+https://google.com/search?q=%{ke:selection}                     |                            | https://google.com
+https://google.com/search?q=%{ke:selection:fallback=path}       |                            | https://google.com/search
+https://google.com/search?q=%s                                  | keyword selection          | https://google.com/search?q=keyword%20selection
+https://google.com/search?q=%S                                  | keyword selection          | https://google.com/search?q=keyword selection
+https://google.com/search?q=%s                                  |                            | https://google.com
+http://validator.w3.org/checklink?uri=%{ke:location}            | http://example.com/foo/bar | http://validator.w3.org/checklink?uri=http%3A%2F%2Fexample.com%2Ffoo%2Fbar
+http://validator.w3.org/checklink?uri=%{ke:origin}              | http://example.com/foo/bar | http://validator.w3.org/checklink?uri=http%3A%2F%2Fexample.com
+%{ke:origin:escape=false}/robots.txt                            | http://example.com/foo/bar | http://example.com/robots.txt
+https://www.ssllabs.com/ssltest/analyze.html?d=%{ke:domain}     | http://example.com/foo/bar | https://www.ssllabs.com/ssltest/analyze.html?d=example.com
+http://example2.com%{ke:path:escape=false}                      | http://example.com/foo/bar | http://example2.com/foo/bar
+%{ke:origin:escape=false}%{ke:directory:escape=false}           | http://example.com/foo/bar | http://example.com/foo/
+%{ke:origin:escape=false}%{ke:directory:escape=false}           | http://example.com/foo     | http://example.com/
+
+
+## Installation
+
+Open [keyword-expansion.xpi](https://blackwinter.de/addons/keyword-expansion.xpi) (HTTPS) or [keyword-expansion.xpi](http://blackwinter.de/addons/keyword-expansion.xpi) (HTTP) in Firefox.
+
+As of now, the certificate of the download server is self-signed which Firefox won't accept. Either set `extensions.install.requireBuiltInCerts` to `false` in `about:config` or use the HTTP link.
+
+
+## Versioning
+
+This project adheres to the [Semantic Versioning Specification](http://semver.org/).
 
 
 ## Links
