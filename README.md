@@ -65,7 +65,7 @@ http://example2.com%{ke:path:escape=false}                      | http://example
 
 Open [keyword-expansion.xpi](https://blackwinter.de/addons/keyword-expansion.xpi) (HTTPS) or [keyword-expansion.xpi](http://blackwinter.de/addons/keyword-expansion.xpi) (HTTP) in Firefox.
 
-As of now, the certificate of the download server is self-signed which Firefox won't accept. Either set `extensions.install.requireBuiltInCerts` to `false` in `about:config` or use the HTTP link.
+For the time being, the certificate of the download server is self-signed which Firefox won't accept. Either set `extensions.install.requireBuiltInCerts` to `false` in `about:config` or use the HTTP link.
 
 
 ## Versioning
