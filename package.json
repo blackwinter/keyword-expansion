@@ -1,10 +1,17 @@
 {
-  "name": "keyword-expansion",
-  "title": "Keyword Expansion",
-  "id": "jid1-ZDN322pmRb0eQA",
+  "name":        "keyword-expansion",
+  "title":       "Keyword Expansion",
+  "id":          "jid1-ZDN322pmRb0eQA",
   "description": "Expand keywords in bookmark URLs.",
-  "author": "Jens Wille <jens.wille@gmail.com>",
-  "homepage": "https://github.com/blackwinter/keyword-expansion",
-  "license": "MPL 2.0",
-  "version": "0.2.0"
+  "author":      "Jens Wille <jens.wille@gmail.com>",
+  "homepage":    "https://github.com/blackwinter/keyword-expansion",
+  "license":     "MPL 2.0",
+  "version":     "0.2.0",
+  "preferences": [{
+    "name":        "enableCompat",
+    "title":       "Enable keyword searches compatibility?",
+    "description": "Disable to have Keyword Expansion ignore %s and %S in your bookmarks.",
+    "type":        "bool",
+    "value":       true
+  }]
 }
