@@ -1,5 +1,10 @@
 # Revision history for Keyword Expansion
 
+## 0.3.0 [2015-03-12]
+
+* Added preference to disable keyword searches compatibility.
+* Extended Firefox compatibility range.
+
 ## 0.2.0 [2015-03-10]
 
 * Extended directive syntax `%{ke:<keyword>[:<options>]}`.

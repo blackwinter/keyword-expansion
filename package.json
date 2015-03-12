@@ -1,12 +1,12 @@
 {
   "name":        "keyword-expansion",
   "title":       "Keyword Expansion",
-  "id":          "jid1-ZDN322pmRb0eQA",
+  "id":          "keyword-expansion@blackwinter.de",
   "description": "Expand keywords in bookmark URLs.",
   "author":      "Jens Wille <jens.wille@gmail.com>",
   "homepage":    "https://github.com/blackwinter/keyword-expansion",
   "license":     "MPL 2.0",
-  "version":     "0.2.0",
+  "version":     "0.3.0",
   "preferences": [{
     "name":        "enableCompat",
     "title":       "Enable keyword searches compatibility?",

@@ -40,6 +40,8 @@ Directive | Equivalent
 `%s`      | `%{ke:selection}`
 `%S`      | `%{ke:selection:escape=false}`
 
+You can disable keyword searches compatibility in the extension preferences.
+
 
 ## Examples
 
@@ -64,6 +66,8 @@ http://example2.com%{ke:path:escape=false}                      | http://example
 ## Installation
 
 Open [keyword-expansion.xpi](https://blackwinter.de/addons/keyword-expansion.xpi) (HTTPS) or [keyword-expansion.xpi](http://blackwinter.de/addons/keyword-expansion.xpi) (HTTP) in Firefox.
+
+Automatic updates only work with the HTTPS link.
 
 For the time being, the certificate of the download server is self-signed which Firefox won't accept. Either set `extensions.install.requireBuiltInCerts` to `false` in `about:config` or use the HTTP link.
 
