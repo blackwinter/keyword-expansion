@@ -1,5 +1,4 @@
 require 'rake/clean'
-require 'net/scp'
 require 'json'
 require 'uri'
 
@@ -32,6 +31,8 @@ task xpi: %w[clean cfx:xpi]
 
 desc 'Upload xpi'
 task upload: :xpi do
+  require 'net/scp'
+
   remote = URI(remote_target)
 
   Net::SCP.start(remote.host, remote_user) { |scp| Dir[glob].each { |file|
