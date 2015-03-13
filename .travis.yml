@@ -8,7 +8,7 @@ env:
 script:
   rake test
 
-before_install:
+install:
   - wget https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.tar.gz
   - tar xf jetpack-sdk-latest.tar.gz
   - sh -e /etc/init.d/xvfb start
