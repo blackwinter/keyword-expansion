@@ -81,6 +81,7 @@ This project adheres to the [Semantic Versioning Specification](http://semver.or
 
 * Download:    https://blackwinter.de/addons/keyword-expansion.xpi
 * Source code: https://github.com/blackwinter/keyword-expansion
+* Travis CI:   https://travis-ci.org/blackwinter/keyword-expansion
 
 ## Authors
 

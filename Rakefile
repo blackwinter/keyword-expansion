@@ -3,7 +3,8 @@ require 'net/scp'
 require 'json'
 require 'uri'
 
-ADDON_SDK = File.expand_path(ENV['ADDON_SDK'] || '~/vendor/addon-sdk')
+addon_sdk = File.expand_path(ENV['ADDON_SDK'] || '~/vendor/addon-sdk')
+ADDON_SDK = File.directory?(addon_sdk) ? addon_sdk : Dir['addon-sdk*'].first
 
 remote_target = ENV['REMOTE_TARGET'] || 'https://blackwinter.de/addons'
 remote_user   = ENV['REMOTE_USER']   || ENV['USER']
