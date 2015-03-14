@@ -1,2 +1,4 @@
 *.xpi
 *.update.rdf
+addon-sdk*
+jetpack-*
