@@ -67,7 +67,7 @@ namespace :cfx do
       '--update-url',  "#{base}.update.rdf"
   end
 
-  define_method(:cfx) { |*args|
+  class << self; self; end.send(:define_method, :cfx) { |*args|
     sh %Q{cd #{addon_sdk} && . bin/activate && cd - && cfx #{args.join(' ')}}
   }
 end
@@ -76,7 +76,7 @@ file addon_sdk_file = File.basename(addon_sdk_url) do
   sh 'wget', addon_sdk_url
 end
 
-directory addon_sdk_local => addon_sdk_file do
+file addon_sdk_local => addon_sdk_file do
   sh 'tar', 'xf', addon_sdk_file
 
   if addon_sdk_dir = Dir[addon_sdk_local + '*'].first
