@@ -7,6 +7,11 @@
   "homepage":    "https://github.com/blackwinter/keyword-expansion",
   "license":     "MPL 2.0",
   "version":     "0.3.0",
+  "main":        "index.js",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec":  ">=38.0a1"
+  },
   "preferences": [{
     "name":        "enableCompat",
     "title":       "Enable keyword searches compatibility?",

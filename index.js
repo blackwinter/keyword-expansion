@@ -5,10 +5,10 @@
 const { Cu } = require("chrome");
 Cu.import("resource:///modules/PlacesUIUtils.jsm");
 
-let ke = require("./keyword-expansion"),
+let ke = require("./lib/keyword-expansion"),
     selection = require("sdk/selection");
 
-//require("./test-bookmarks").create();
+//require("./lib/test-bookmarks").create();
 
 try {
   ke.replaceFunction(PlacesUIUtils, "_openNodeIn", function() {

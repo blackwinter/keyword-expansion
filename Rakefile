@@ -2,52 +2,59 @@ require 'rake/clean'
 require 'json'
 require 'uri'
 
-addon_sdk_local, addon_sdk_url = 'addon-sdk', ENV['ADDON_SDK_URL'] ||
-  'https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.tar.gz'
-
-addon_sdk = File.expand_path(ENV['ADDON_SDK'] || '~/vendor/addon-sdk')
-addon_sdk = addon_sdk_local unless File.directory?(addon_sdk)
+firefox = ENV['JPM_FIREFOX_BINARY'] || '/usr/bin/firefox'
 
 remote_target = ENV['REMOTE_TARGET'] || 'https://blackwinter.de/addons'
+remote_root   = ENV['REMOTE_ROOT']   || '/var/www/html'
 remote_user   = ENV['REMOTE_USER']   || ENV['USER']
 
-main, test_re = 'lib/main.js', %r{^/*(.*test-bookmarks)}
+json = 'package.json'
+conf = JSON.parse(File.read(json))
 
-config = JSON.parse(File.read('package.json'))
+id, name, version, main = conf
+  .values_at(*%w[id name version main])
 
-name = config['name']
-glob = "#{name}.{xpi,update.rdf}"
+bak = File.join('tmp', json)
+xpi = "#{id}-#{version}.xpi"
+rdf = "#{id}-#{version}.update.rdf"
+sgn = "#{name.tr('-', '_')}-#{version}-fx+an.xpi"
 
-CLOBBER.include(glob)
-CLEAN.include('C:\nppdf32Log\debuglog.txt')
+CLOBBER.include('*.{xpi,update.rdf}', bak)
+
+test_re = %r{^/*(.*test-bookmarks)}
 
 task clean: 'testing:disable'
 
 desc 'Run program'
-task run: %w[testing:enable cfx:run clean]
+task run: %w[testing:enable jpm:run clean]
 
 desc 'Run tests'
-task test: %w[addon_sdk clean cfx:test]
+task test: %w[clean jpm:test]
 
 desc 'Generate xpi'
-task xpi: %w[clean cfx:xpi]
+task xpi: %w[clean package:update jpm:xpi package:restore]
+
+desc 'Sign xpi'
+task sign: %w[clean package:update jpm:sign package:restore]
 
 desc 'Upload xpi'
-task upload: :xpi do
+task upload: %w[xpi sign] do
   require 'net/scp'
 
   remote = URI(remote_target)
+  base = File.join(remote_root, remote.path, name)
 
-  Net::SCP.start(remote.host, remote_user) { |scp| Dir[glob].each { |file|
-    scp.upload!(file, File.join('/var/www', remote.path))
-  } }
+  Net::SCP.start(remote.host, remote_user) { |scp|
+    scp.upload!(rdf, "#{base}.update.rdf")
+    scp.upload!(sgn, "#{base}.xpi")
+  }
 end
 
 desc "Release #{name}"
-task release: %w[test upload tag]
+task release: %w[upload tag]
 
 task :tag do
-  sh 'git', 'tag', '-f', "v#{config['version']}"
+  sh 'git', 'tag', '-f', "v#{version}"
 end
 
 namespace :testing do
@@ -56,37 +63,37 @@ namespace :testing do
   } }
 end
 
-namespace :cfx do
-  %w[run test].each { |t| task(t) { cfx(t) } }
+namespace :package do
 
-  task :xpi do
+  task :update do
+    abort "Backup already exists: #{bak}" if File.exist?(bak)
+    cp json, bak
+
     base = File.join(remote_target, name)
 
-    cfx :xpi,
-      '--update-link', "#{base}.xpi",
-      '--update-url',  "#{base}.update.rdf"
+    File.write(json, JSON.generate(conf.merge(
+      'updateUrl'  => "#{base}.update.rdf",
+      'updateLink' => "#{base}.xpi"
+    )))
   end
 
-  class << self; self; end.send(:define_method, :cfx) { |*args|
-    sh %Q{cd #{addon_sdk} && . bin/activate && cd - && cfx #{args.join(' ')}}
+  task :restore do
+    abort "Backup not found: #{bak}" unless File.exist?(bak)
+    mv bak, json
+  end
+
+end
+
+namespace :jpm do
+  %w[run test xpi].each { |t| task(t) { jpm(t) } }
+
+  task :sign do
+    api = ENV.values_at(*%w[AMO_API_KEY AMO_API_SECRET])
+    api.any?(&:nil?) ? warn("AMO API Key/Secret missing") :
+      jpm(:sign, *%w[--api-key --api-secret].zip(api).flatten)
+  end
+
+  define_singleton_method(:jpm) { |cmd, *args|
+    sh 'jpm', cmd.to_s, '-b', firefox, *args
   }
 end
-
-file addon_sdk_file = File.basename(addon_sdk_url) do
-  sh 'wget', addon_sdk_url
-end
-
-file addon_sdk_local => addon_sdk_file do
-  sh 'tar', 'xf', addon_sdk_file
-
-  if addon_sdk_dir = Dir[addon_sdk_local + '*'].first
-    mv addon_sdk_dir, addon_sdk_local
-  else
-    abort "No such directory: #{addon_sdk_local}"
-  end
-end
-
-task addon_sdk: File.directory?(addon_sdk) ? [] : addon_sdk_local
-
-CLOBBER.include(addon_sdk_local)
-CLEAN.include(addon_sdk_file)

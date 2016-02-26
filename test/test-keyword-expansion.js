@@ -1,4 +1,4 @@
-let ke = require("./keyword-expansion"), testExpandUrl = function(name, array) {
+let ke = require("../lib/keyword-expansion"), testExpandUrl = function(name, array) {
   let test = "test keyword-expansion " + name;
 
   exports[test] = function(assert) {

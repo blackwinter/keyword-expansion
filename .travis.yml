@@ -1,5 +1,8 @@
 language:
-  generic
+  node_js
+
+node_js:
+  stable
 
 env:
   DISPLAY=:99.0
@@ -8,7 +11,8 @@ script:
   rake test
 
 install:
-  sh -e /etc/init.d/xvfb start
+  - npm install -g jpm
+  - sh -e /etc/init.d/xvfb start
 
 sudo:
   false
