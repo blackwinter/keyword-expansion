@@ -2,28 +2,20 @@
    License, v. 2.0. If a copy of the MPL was not distributed with this
    file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const { Cu } = require("chrome");
-Cu.import("resource:///modules/PlacesUIUtils.jsm");
+const { Ci } = require("chrome");
 
 let ke = require("./lib/keyword-expansion"),
-    selection = require("sdk/selection");
+    events = require("sdk/system/events");
+
+let listener = ke.httpRequestListener(function(event) {
+  return event.subject.QueryInterface(Ci.nsIHttpChannel).URI; });
+
+exports.main = function() {
+  events.on(ke.observeTopic, listener);
+}
+
+exports.onUnload = function() {
+  events.off(ke.observeTopic, listener);
+};
 
 //require("./lib/test-bookmarks").create();
-
-try {
-  ke.replaceFunction(PlacesUIUtils, "_openNodeIn", function() {
-    let aNode = arguments[0], aWindow = arguments[2];
-
-    ke.wrapExpandUrl(aNode, function(expandUrl) {
-      ke.replaceFunction(aWindow, "openUILinkIn", function() {
-        arguments[0] = expandUrl(arguments[0], selection.text);
-        return arguments;
-      });
-    });
-
-    return arguments;
-  });
-}
-catch (e) {
-  console.error(e);
-}
