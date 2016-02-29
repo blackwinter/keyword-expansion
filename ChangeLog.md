@@ -1,5 +1,10 @@
 # Revision history for Keyword Expansion
 
+## 0.4.0 [2016-02-29]
+
+* Switched build tool to jpm.
+* Fixed compatibility issues.
+
 ## 0.3.0 [2015-03-12]
 
 * Added preference to disable keyword searches compatibility.
