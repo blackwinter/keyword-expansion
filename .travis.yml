@@ -13,3 +13,6 @@ install:
 
 sudo:
   false
+
+dist:
+  trusty
