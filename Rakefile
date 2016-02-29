@@ -2,7 +2,7 @@ require 'rake/clean'
 require 'json'
 require 'uri'
 
-firefox = ENV['JPM_FIREFOX_BINARY'] || '/usr/bin/firefox'
+firefox = ENV['JPM_FIREFOX_BINARY'] || %x{which firefox}.chomp
 
 remote_target = ENV['REMOTE_TARGET'] || 'https://blackwinter.de/addons'
 remote_root   = ENV['REMOTE_ROOT']   || '/var/www/html'
