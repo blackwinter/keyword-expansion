@@ -1,5 +1,8 @@
 language:
-  generic
+  node_js
+
+node_js:
+  stable
 
 env:
   DISPLAY=:99.0
@@ -10,6 +13,10 @@ script:
 install:
   - npm install -g jpm
   - sh -e /etc/init.d/xvfb start
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y nodejs nodejs-legacy npm
 
 sudo:
   required
