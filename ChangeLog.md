@@ -1,5 +1,9 @@
 # Revision history for Keyword Expansion
 
+## 0.5.0 [2016-02-29]
+
+* Switched to events module.
+
 ## 0.4.0 [2016-02-29]
 
 * Switched build tool to jpm.
