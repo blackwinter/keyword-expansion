@@ -12,7 +12,7 @@ install:
   - sh -e /etc/init.d/xvfb start
 
 sudo:
-  false
+  required
 
 dist:
   trusty
