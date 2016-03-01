@@ -22,20 +22,30 @@ CLOBBER.include('*.{xpi,update.rdf}', 'tmp/*.bak')
 
 test_re = %r{^/*(.*test-bookmarks)}
 
+file xpi do
+  Rake.application.invoke_task('jpm:xpi')
+end
+
+file rdf => xpi
+
+file sgn => xpi do
+  Rake.application.invoke_task('jpm:sign')
+end
+
 desc 'Run program'
-task run: %w[jpm:run]
+task run: 'jpm:run'
 
 desc 'Run tests'
-task test: %w[jpm:test]
+task test: 'jpm:test'
 
 desc 'Generate xpi'
-task xpi: %w[jpm:xpi]
+task xpi: xpi
 
 desc 'Sign xpi'
-task sign: %w[xpi jpm:sign]
+task sign: sgn
 
 desc 'Upload xpi'
-task upload: :sign do
+task upload: [rdf, sgn] do
   require 'net/scp'
 
   remote = URI(remote_target)
@@ -47,12 +57,12 @@ task upload: :sign do
   }
 end
 
-desc "Release #{name}"
-task release: %w[upload tag]
-
 task :tag do
   sh 'git', 'tag', '-f', "v#{version}"
 end
+
+desc "Release #{name}"
+task release: %w[upload tag]
 
 namespace :jpm do
 
