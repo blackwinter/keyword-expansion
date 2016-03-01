@@ -3,19 +3,12 @@
    file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const { Ci } = require("chrome");
+let events = require("sdk/system/events");
 
-let ke = require("./lib/keyword-expansion"),
-    events = require("sdk/system/events");
+let listener = require("./lib/keyword-expansion").httpRequestListener(events,
+  function(subject) { return subject.QueryInterface(Ci.nsIHttpChannel).URI; });
 
-let listener = ke.httpRequestListener(function(event) {
-  return event.subject.QueryInterface(Ci.nsIHttpChannel).URI; });
-
-exports.main = function() {
-  events.on(ke.observeTopic, listener);
-}
-
-exports.onUnload = function() {
-  events.off(ke.observeTopic, listener);
-};
+exports.main     = listener.on;
+exports.onUnload = listener.off;
 
 //require("./lib/test-bookmarks").create();
