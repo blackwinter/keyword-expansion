@@ -1,5 +1,9 @@
 # Revision history for Keyword Expansion
 
+## 0.6.0 [2016-03-24]
+
+* Added `basedir` fallback.
+
 ## 0.5.1 [2016-03-01]
 
 * Refactored.
