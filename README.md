@@ -29,7 +29,7 @@ Options are of the form `<option>[=<value>]`, where `<value>` defaults to `true`
 Option     | Description
 -----------|------------
 `escape`   | Whether the replacement value should be [encoded as a URI component](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) (**default**, specify `escape=false` if you need the unescaped value)
-`fallback` | Which page to load if no text is selected (only applies to the `selection` keyword); possible values are: [`origin`](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/origin) (the site's homepage, **default**), `path` (the URL without the query parameters), `directory` (the path without the last component)
+`fallback` | Which page to load if no text is selected (only applies to the `selection` keyword); possible values are: [`origin`](https://developer.mozilla.org/en-US/docs/Web/API/URLUtils/origin) (the site's homepage, **default**), `path` (the URL without the query parameters), `directory` (the path without the last component), `basedir` (the path's first component only)
 
 ### Keyword searches compatibility
 

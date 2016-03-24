@@ -116,6 +116,38 @@ testExpandUrl("no selection fallback directory", [
   ["http://example.com/foo/bar?baz=%{ke:selection:escape=false,fallback=directory}", null, null, "http://example.com/foo/", true],
 ]);
 
+testExpandUrl("no selection fallback basedir", [
+  ["http://example.com/%{ke:selection:fallback=basedir}",                               null, null, "http://example.com/",      true],
+  ["http://example.com/%{ke:selection:escape=false,fallback=basedir}",                  null, null, "http://example.com/",      true],
+
+  ["http://example.com/%{ke:selection:fallback=basedir}.html",                          null, null, "http://example.com/",      true],
+  ["http://example.com/%{ke:selection:escape=false,fallback=basedir}.html",             null, null, "http://example.com/",      true],
+
+  ["http://example.com/%{ke:selection:fallback=basedir}/foo",                           null, null, "http://example.com//",     true],
+  ["http://example.com/%{ke:selection:escape=false,fallback=basedir}/foo",              null, null, "http://example.com//",     true],
+
+  ["http://example.com/foo?bar=%{ke:selection:fallback=basedir}",                       null, null, "http://example.com/",      true],
+  ["http://example.com/foo?bar=%{ke:selection:escape=false,fallback=basedir}",          null, null, "http://example.com/",      true],
+
+  ["http://example.com/foo/bar?baz=%{ke:selection:fallback=basedir}",                   null, null, "http://example.com/foo/",  true],
+  ["http://example.com/foo/bar?baz=%{ke:selection:escape=false,fallback=basedir}",      null, null, "http://example.com/foo/",  true],
+
+  ["http://example.com/base/%{ke:selection:fallback=basedir}",                          null, null, "http://example.com/base/", true],
+  ["http://example.com/base/%{ke:selection:escape=false,fallback=basedir}",             null, null, "http://example.com/base/", true],
+
+  ["http://example.com/base/%{ke:selection:fallback=basedir}.html",                     null, null, "http://example.com/base/", true],
+  ["http://example.com/base/%{ke:selection:escape=false,fallback=basedir}.html",        null, null, "http://example.com/base/", true],
+
+  ["http://example.com/base/%{ke:selection:fallback=basedir}/foo",                      null, null, "http://example.com/base/", true],
+  ["http://example.com/base/%{ke:selection:escape=false,fallback=basedir}/foo",         null, null, "http://example.com/base/", true],
+
+  ["http://example.com/base/foo?bar=%{ke:selection:fallback=basedir}",                  null, null, "http://example.com/base/", true],
+  ["http://example.com/base/foo?bar=%{ke:selection:escape=false,fallback=basedir}",     null, null, "http://example.com/base/", true],
+
+  ["http://example.com/base/foo/bar?baz=%{ke:selection:fallback=basedir}",              null, null, "http://example.com/base/", true],
+  ["http://example.com/base/foo/bar?baz=%{ke:selection:escape=false,fallback=basedir}", null, null, "http://example.com/base/", true],
+]);
+
 let e = encodeURIComponent, t = {
   "hostname": "example.dev",
   "dirname":  "/foo/",
