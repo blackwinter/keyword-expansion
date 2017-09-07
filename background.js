@@ -2,73 +2,90 @@
    License, v. 2.0. If a copy of the MPL was not distributed with this
    file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-let url       = require("sdk/url"),
-    tabs      = require("sdk/tabs"),
-    prefs     = require("sdk/simple-prefs"),
-    selection = require("sdk/selection");
-
 let KeywordExpansion = {
 
   /***************************************************************************/
   /* settings                                                                */
   /***************************************************************************/
 
-  defaultOptions: { escape: true, fallback: "origin" },
-
   patterns: { main: "%\\{ke:([a-z]+)(:[a-z=,]+)?\\}", compat: "%([sS])" },
 
-  observeTopic: "http-on-modify-request",
+  defaultOptions: { escape: true, fallback: "origin" },
+
+  enableCompat: true, // TODO: options_ui
+
+  activeTab: undefined,
 
   /***************************************************************************/
   /* external methods                                                        */
   /***************************************************************************/
 
-  pattern: function(enableCompat = prefs.prefs.enableCompat) {
+  pattern: function() {
     let pattern = this.patterns.main;
 
-    if (enableCompat) {
+    if (this.enableCompat) {
       pattern += "|" + this.patterns.compat;
     }
 
-    return new RegExp(pattern, 'g');
+    return new RegExp(pattern, "g");
   },
 
-  expandUrl: function(aUrl, aText, aLoc) {
-    let ret = function(value) { ret.value = value; }, res = aUrl.replace(
-      this.pattern(), this.replaceDirective(aUrl, aText, aLoc, ret));
+  expandUrl: function(url, tabUrl, text) {
+    let ret = function(value) { ret.value = value; }, res = url.replace(
+      this.pattern(), this._replaceDirective(url, tabUrl, text, ret));
 
     return ret.value || res;
   },
 
-  isExpandableUrl: function(aUrl) {
-    return this.pattern().test(aUrl);
+  isExpandableUrl: function(url) {
+    return this.pattern().test(url);
   },
 
-  httpRequestListener: function(events, callback) {
-    let ke = this, topic = this.observeTopic, listener = function(event) {
-      try {
-        let uri = callback(event.subject);
+  redirectListener: function(browser) {
+    let ke = this;
 
-        if (ke.isExpandableUrl(uri.spec)) {
-          uri.spec = ke.expandUrl(uri.spec, selection.text);
+    return function(request) {
+      let url = request.url;
+
+      try {
+        if (ke.isExpandableUrl(url)) {
+          let tabUrl = "about:blank", text, redirect = function() {
+            return { redirectUrl: ke.expandUrl(url, tabUrl, text) }; };
+
+          let tabId = ke.activeTab;
+          if (tabId === undefined) {
+            return redirect();
+          }
+
+          return browser.tabs.get(tabId).then(
+            function(tab) {
+              tabUrl = tab.url;
+
+              return browser.tabs.sendMessage(tabId, {}).then(
+                function(res) {
+                  text = res.selection.trim().replace(/\s+/g, " ");
+                  return redirect();
+                },
+                function(e) { console.error(e); return redirect(); }
+              );
+            },
+            function(e) { console.error(e); return redirect(); }
+          );
         }
       }
       catch (e) {
         console.error(e);
       }
+
+      return; // no redirect
     };
-
-    listener.on  = function() { events.on(topic, listener); };
-    listener.off = function() { events.off(topic, listener); };
-
-    return listener;
   },
 
   /***************************************************************************/
   /* internal methods                                                        */
   /***************************************************************************/
 
-  parseOptions: function(options) {
+  _parseOptions: function(options) {
     let optionsHash = Object.create(this.defaultOptions);
 
     if (options) {
@@ -81,9 +98,9 @@ let KeywordExpansion = {
     return optionsHash;
   },
 
-  replaceDirective: function(aUrl, aText, aLoc, ret) {
-    let tab = url.URL(aLoc || tabs.activeTab.url), ke = this,
-        log = function(msg) { console.log(msg + " in " + aUrl); },
+  _replaceDirective: function(url, tabUrl, text, ret) {
+    let tab = new URL(tabUrl), ke = this,
+        log = function(msg) { console.log(msg + " in " + url); },
         dir = function(arg) { return arg.pathname.replace(/[^\/]+$/, ""); };
 
     return function(match, directive, options, compat) {
@@ -91,7 +108,7 @@ let KeywordExpansion = {
         return;
       }
 
-      let opt = ke.parseOptions(options), res = function(value) {
+      let opt = ke._parseOptions(options), res = function(value) {
         res.value = opt.escape.toString() === "false" ?
           value : encodeURIComponent(value);
       };
@@ -103,8 +120,8 @@ let KeywordExpansion = {
 
       switch (directive) {
         case "selection":
-          aText ? res(aText.trim().replace(/\s+/g, " ")) :
-            ke.selectionFallback(aUrl, opt.fallback, dir, ret);
+          text && text.length > 0 ? res(text) :
+            ke._selectionFallback(url, opt.fallback, dir, ret);
 
           break;
         case "location":
@@ -122,7 +139,7 @@ let KeywordExpansion = {
 
           let host = tab.host, port = tab.port;
 
-          if (port !== "" && host.indexOf(':') === -1) {
+          if (port !== "" && host.indexOf(":") === -1) {
             host += ":" + port;
           }
 
@@ -146,21 +163,21 @@ let KeywordExpansion = {
     };
   },
 
-  selectionFallback: function(aUrl, fallback, dir, ret) {
-    let oUrl = url.URL(aUrl.replace(this.pattern(), ""));
+  _selectionFallback: function(url, fallback, dir, ret) {
+    url = new URL(url.replace(this.pattern(), ""));
 
     switch (fallback) {
       case "origin":
-        ret(oUrl.origin);
+        ret(url.origin);
         break;
       case "path":
-        ret(oUrl.origin + oUrl.pathname);
+        ret(url.origin + url.pathname);
         break;
       case "directory":
-        ret(oUrl.origin + dir(oUrl));
+        ret(url.origin + dir(url));
         break;
       case "basedir":
-        ret(oUrl.origin + dir(oUrl).replace(/^(\/[^\/]+\/).*/, "$1"));
+        ret(url.origin + dir(url).replace(/^(\/[^\/]+\/).*/, "$1"));
         break
       default:
         log("Invalid fallback option `" + fallback + "'");
@@ -170,6 +187,20 @@ let KeywordExpansion = {
 
 };
 
-Object.keys(KeywordExpansion).forEach(function(i) {
-  exports[i] = KeywordExpansion[i];
+browser.windows.onCreated.addListener(function(win) {
+  for (let tab of win.tabs) {
+    if (tab.active) {
+      KeywordExpansion.activeTab = tab.id;
+      break;
+    }
+  }
 });
+
+browser.tabs.onActivated.addListener(function(tab) {
+  KeywordExpansion.activeTab = tab.tabId;
+});
+
+browser.webRequest.onBeforeRequest.addListener(
+  KeywordExpansion.redirectListener(browser),
+  { urls: ["<all_urls>"] }, ["blocking"]
+);

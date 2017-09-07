@@ -1,6 +1,6 @@
 # Keyword Expansion
 
-Firefox add-on to expand keywords in bookmark URLs. Modern alternative to [KeywordSelection](http://dragtotab.mozdev.org/keywordselection/).
+Firefox [web extension](https://developer.mozilla.org/en-US/Add-ons/WebExtensions) to expand keywords in bookmark URLs. Modern alternative to [KeywordSelection](http://dragtotab.mozdev.org/keywordselection/).
 
 
 ## Usage
@@ -40,8 +40,6 @@ Directive | Equivalent
 `%s`      | `%{ke:selection}`
 `%S`      | `%{ke:selection:escape=false}`
 
-You can disable keyword searches compatibility in the extension preferences.
-
 
 ## Examples
 
@@ -65,9 +63,7 @@ http://example2.com%{ke:path:escape=false}                      | http://example
 
 ## Installation
 
-Open [keyword-expansion.xpi](https://blackwinter.de/addons/keyword-expansion.xpi) (HTTPS) or [keyword-expansion.xpi](http://blackwinter.de/addons/keyword-expansion.xpi) (HTTP) in Firefox.
-
-Automatic updates only work with the HTTPS link.
+Open [keyword-expansion.xpi](https://blackwinter.de/addons/keyword-expansion.xpi) in Firefox.
 
 
 ## Versioning
@@ -79,7 +75,6 @@ This project adheres to the [Semantic Versioning Specification](http://semver.or
 
 * Download:    https://blackwinter.de/addons/keyword-expansion.xpi
 * Source code: https://github.com/blackwinter/keyword-expansion
-* Travis CI:   https://travis-ci.org/blackwinter/keyword-expansion
 
 ## Authors
 
@@ -88,6 +83,6 @@ This project adheres to the [Semantic Versioning Specification](http://semver.or
 
 ## License and Copyright
 
-Copyright (C) 2015-2016 Jens Wille
+Copyright (C) 2015-2017 Jens Wille
 
 This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.

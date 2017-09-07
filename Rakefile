@@ -2,58 +2,51 @@ require 'rake/clean'
 require 'json'
 require 'uri'
 
-firefox = ENV['JPM_FIREFOX_BINARY'] || %x{which firefox}.chomp
-
 remote_target = ENV['REMOTE_TARGET'] || 'https://blackwinter.de/addons'
 remote_root   = ENV['REMOTE_ROOT']   || '/var/www/html'
 remote_user   = ENV['REMOTE_USER']   || ENV['USER']
 
-json = 'package.json'
+build_args = %w[-a . -i *.md Rakefile]
+
+json = 'manifest.json'
 conf = JSON.parse(File.read(json))
 
-id, name, version, main = conf
-  .values_at(*%w[id name version main])
+name, version = conf.values_at(*%w[name version])
 
-xpi = "#{id}-#{version}.xpi"
-rdf = "#{id}-#{version}.update.rdf"
-sgn = "#{name.tr('-', '_')}-#{version}-fx.xpi"
+zip = "#{name}-#{version}.zip"
+xpi = "#{name.tr('-', '_')}-#{version}-an+fx.xpi"
 
-CLOBBER.include('*.{xpi,update.rdf}', 'tmp/*.bak')
+CLOBBER.include('*.{zip,xpi}')
 
-test_re = %r{^/*(.*test-bookmarks)}
+file zip do
+  Rake.application.invoke_task('we:build')
+end
 
 file xpi do
-  Rake.application.invoke_task('jpm:xpi')
+  Rake.application.invoke_task('we:sign')
 end
 
-file rdf => xpi
+desc "Run firefox with #{name}"
+task run: 'we:run'
 
-file sgn => xpi do
-  Rake.application.invoke_task('jpm:sign')
-end
+desc "Check #{name} source"
+task lint: 'we:lint'
 
-desc 'Run program'
-task run: 'jpm:run'
+desc "Generate #{zip}"
+task build: zip
 
-desc 'Run tests'
-task test: 'jpm:test'
+desc "Generate #{xpi}"
+task sign: xpi
 
-desc 'Generate xpi'
-task xpi: xpi
-
-desc 'Sign xpi'
-task sign: sgn
-
-desc 'Upload xpi'
-task upload: [rdf, sgn] do
+desc "Upload #{xpi}"
+task upload: xpi do
   require 'net/scp'
 
   remote = URI(remote_target)
   base = File.join(remote_root, remote.path, name)
 
   Net::SCP.start(remote.host, remote_user) { |scp|
-    scp.upload!(rdf, "#{base}.update.rdf")
-    scp.upload!(sgn, "#{base}.xpi")
+    scp.upload!(xpi, "#{base}.xpi")
   }
 end
 
@@ -61,61 +54,21 @@ task :tag do
   sh 'git', 'tag', '-f', "v#{version}"
 end
 
-desc "Release #{name}"
+desc "Release #{name} v#{version}"
 task release: %w[upload tag]
 
-namespace :jpm do
+namespace :we do
 
-  task :run do
-    testing { jpm :run }
-  end
+  def we(*args); sh 'web-ext', *args.map(&:to_s); end
 
-  task :test do
-    jpm :test
-  end
+  %w[run lint].each { |cmd| task(cmd) { we(cmd) } }
 
-  task :xpi do
-    update { jpm :xpi }
-  end
+  task :build do we :build, *build_args end
 
   task :sign do
     args = ENV.values_at(*%w[AMO_API_KEY AMO_API_SECRET])
     abort "AMO API Key/Secret missing" if args.any?(&:nil?)
-
-    args << xpi
-    update { jpm(:sign, *%w[--api-key --api-secret --xpi].zip(args).flatten) }
+    we :sign, *%w[--api-key --api-secret].zip(args).flatten + build_args
   end
-
-  define_singleton_method(:jpm) { |cmd, *args|
-    sh 'jpm', cmd.to_s, '-b', firefox, *args
-  }
-
-  define_singleton_method(:backup) { |file, &block|
-    bak = File.join('tmp', "#{file}.bak")
-    abort "Backup already exists: #{bak}" if File.exist?(bak)
-
-    begin
-      cp file, bak
-      block.call
-    ensure
-      mv bak, file
-    end
-  }
-
-  define_singleton_method(:testing) { |&block| backup(main) {
-    File.write(main, File.read(main).sub(test_re, '\1'))
-    block.call
-  } }
-
-  define_singleton_method(:update) { |&block| backup(json) {
-    base = File.join(remote_target, name)
-
-    File.write(json, JSON.generate(conf.merge(
-      'updateURL'  => "#{base}.update.rdf",
-      'updateLink' => "#{base}.xpi"
-    )))
-
-    block.call
-  } }
 
 end
