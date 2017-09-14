@@ -1,5 +1,13 @@
 # Revision history for Keyword Expansion
 
+## 1.0.1 [2017-09-14]
+
+* Fixed selection for form input elements and iframes.
+
+## 1.0.0 [2017-09-07]
+
+* Ported to Web Extension.
+
 ## 0.6.0 [2016-03-24]
 
 * Added `basedir` fallback.

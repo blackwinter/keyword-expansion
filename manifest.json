@@ -4,7 +4,7 @@
   "description":  "Expand keywords in bookmark URLs.",
   "author":       "Jens Wille <jens.wille@gmail.com>",
   "homepage_url": "https://github.com/blackwinter/keyword-expansion",
-  "version":      "1.0",
+  "version":      "1.0.1",
 
   "applications": {
     "gecko": {
