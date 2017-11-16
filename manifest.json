@@ -1,15 +1,15 @@
 {
 
-  "name":         "keyword-expansion",
+  "name":         "Keyword Expansion",
   "description":  "Expand keywords in bookmark URLs.",
   "author":       "Jens Wille <jens.wille@gmail.com>",
   "homepage_url": "https://github.com/blackwinter/keyword-expansion",
-  "version":      "1.0.1",
+  "version":      "1.0.2",
 
   "applications": {
     "gecko": {
       "id": "keyword-expansion@blackwinter.de",
-      "strict_min_version": "55.0"
+      "strict_min_version": "56.0"
     }
   },
 

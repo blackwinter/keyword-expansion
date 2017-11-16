@@ -12,6 +12,7 @@ json = 'manifest.json'
 conf = JSON.parse(File.read(json))
 
 name, version = conf.values_at(*%w[name version])
+name.downcase!.tr!(' ', '-')
 
 zip = "#{name}-#{version}.zip"
 xpi = "#{name.tr('-', '_')}-#{version}-an+fx.xpi"

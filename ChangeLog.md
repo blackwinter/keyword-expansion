@@ -1,5 +1,9 @@
 # Revision history for Keyword Expansion
 
+## 1.0.2 [2017-11-16]
+
+* Fixed activated tab for middle-click.
+
 ## 1.0.1 [2017-09-14]
 
 * Fixed selection for form input elements and iframes.
