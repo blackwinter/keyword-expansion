@@ -14,6 +14,8 @@ let KeywordExpansion = {
 
   enableCompat: true, // TODO: options_ui
 
+  blankUrl: "about:blank",
+
   activeTab: undefined,
 
   /***************************************************************************/
@@ -49,7 +51,7 @@ let KeywordExpansion = {
 
       try {
         if (ke.isExpandableUrl(url)) {
-          let tabUrl = "about:blank", text, redirect = function() {
+          let tabUrl = ke.blankUrl, text, redirect = function() {
             return { redirectUrl: ke.expandUrl(url, tabUrl, text) }; };
 
           let tabId = ke.activeTab;
@@ -196,8 +198,14 @@ browser.windows.onCreated.addListener(function(win) {
   }
 });
 
-browser.tabs.onActivated.addListener(function(tab) {
-  KeywordExpansion.activeTab = tab.tabId;
+browser.tabs.onActivated.addListener(function(tabInfo) {
+  let tabId = tabInfo.tabId;
+
+  browser.tabs.get(tabId).then(function(tab) {
+    if (tab.url !== KeywordExpansion.blankUrl) {
+      KeywordExpansion.activeTab = tabId;
+    }
+  });
 });
 
 browser.webRequest.onBeforeRequest.addListener(
