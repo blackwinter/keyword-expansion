@@ -1,5 +1,9 @@
 # Revision history for Keyword Expansion
 
+## 0.6.1 [2019-09-26]
+
+* Renamed to `-legacy`.
+
 ## 0.6.0 [2016-03-24]
 
 * Added `basedir` fallback.

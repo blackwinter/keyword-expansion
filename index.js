@@ -10,5 +10,3 @@ let listener = require("./lib/keyword-expansion").httpRequestListener(events,
 
 exports.main     = listener.on;
 exports.onUnload = listener.off;
-
-//require("./lib/test-bookmarks").create();
