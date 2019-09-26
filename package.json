@@ -1,12 +1,12 @@
 {
-  "name":        "keyword-expansion",
-  "title":       "Keyword Expansion",
-  "id":          "keyword-expansion@blackwinter.de",
+  "name":        "keyword-expansion-legacy",
+  "title":       "Keyword Expansion (Legacy)",
+  "id":          "keyword-expansion-legacy@blackwinter.de",
   "description": "Expand keywords in bookmark URLs.",
   "author":      "Jens Wille <jens.wille@gmail.com>",
   "homepage":    "https://github.com/blackwinter/keyword-expansion",
   "license":     "MPL 2.0",
-  "version":     "0.6.0",
+  "version":     "0.6.1",
   "main":        "index.js",
   "engines": {
     "firefox": ">=38.0a1"

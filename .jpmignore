@@ -1,5 +1,2 @@
 .*
-tmp/
-test/
 *.xpi
-*.update.rdf
