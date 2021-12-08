@@ -1,5 +1,9 @@
 # Revision history for Keyword Expansion
 
+## 2.0.0 [2021-12-08]
+
+* Switched directive syntax from `%{...}` to `$[...]`.
+
 ## 1.0.2 [2017-11-16]
 
 * Fixed activated tab for middle-click.

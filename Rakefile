@@ -67,8 +67,12 @@ namespace :we do
   task :build do we :build, *build_args end
 
   task :sign do
-    args = ENV.values_at(*%w[AMO_API_KEY AMO_API_SECRET])
-    abort "AMO API Key/Secret missing" if args.any?(&:nil?)
+    args = %w[Key Secret].map { |k|
+      print "AMO API #{k}: "
+      $stdin.gets&.chomp || ''
+    }
+
+    abort "AMO API Key/Secret missing" if args.any?(&:empty?)
     we :sign, *%w[--api-key --api-secret].zip(args).flatten + build_args
   end
 
