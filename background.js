@@ -8,7 +8,7 @@ let KeywordExpansion = {
   /* settings                                                                */
   /***************************************************************************/
 
-  patterns: { main: "%\\{ke:([a-z]+)(:[a-z=,]+)?\\}", compat: "%([sS])" },
+  patterns: { main: "\\$\\[ke:([a-z]+)(:[a-z=,]+)?\\]", compat: "%([sS])" },
 
   defaultOptions: { escape: true, fallback: "origin" },
 

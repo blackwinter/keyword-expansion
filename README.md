@@ -5,7 +5,7 @@ Firefox [web extension](https://developer.mozilla.org/en-US/Add-ons/WebExtension
 
 ## Usage
 
-Embed directives of the form `%{ke:<keyword>[:<options>]}` in your bookmark URLs.
+Embed directives of the form `$[ke:<keyword>[:<options>]]` in your bookmark URLs.
 
 ### Keywords
 
@@ -37,28 +37,28 @@ The following directives are supported for compatibility with [keyword searches]
 
 Directive | Equivalent
 ----------|-------------------------------------------
-`%s`      | `%{ke:selection}`
-`%S`      | `%{ke:selection:escape=false}`
+`%s`      | `$[ke:selection]`
+`%S`      | `$[ke:selection:escape=false]`
 
 
 ## Examples
 
 Bookmark                                                        | Selection/Location         | Result
 ----------------------------------------------------------------|----------------------------|-------
-https://google.com/search?q=%{ke:selection}                     | keyword selection          | https://google.com/search?q=keyword%20selection
-https://google.com/search?q=%{ke:selection:escape=false}        | keyword selection          | https://google.com/search?q=keyword selection
-https://google.com/search?q=%{ke:selection}                     |                            | https://google.com
-https://google.com/search?q=%{ke:selection:fallback=path}       |                            | https://google.com/search
+https://google.com/search?q=$[ke:selection]                     | keyword selection          | https://google.com/search?q=keyword%20selection
+https://google.com/search?q=$[ke:selection:escape=false]        | keyword selection          | https://google.com/search?q=keyword selection
+https://google.com/search?q=$[ke:selection]                     |                            | https://google.com
+https://google.com/search?q=$[ke:selection:fallback=path]       |                            | https://google.com/search
 https://google.com/search?q=%s                                  | keyword selection          | https://google.com/search?q=keyword%20selection
 https://google.com/search?q=%S                                  | keyword selection          | https://google.com/search?q=keyword selection
 https://google.com/search?q=%s                                  |                            | https://google.com
-http://validator.w3.org/checklink?uri=%{ke:location}            | http://example.com/foo/bar | http://validator.w3.org/checklink?uri=http%3A%2F%2Fexample.com%2Ffoo%2Fbar
-http://validator.w3.org/checklink?uri=%{ke:origin}              | http://example.com/foo/bar | http://validator.w3.org/checklink?uri=http%3A%2F%2Fexample.com
-%{ke:origin:escape=false}/robots.txt                            | http://example.com/foo/bar | http://example.com/robots.txt
-https://www.ssllabs.com/ssltest/analyze.html?d=%{ke:domain}     | http://example.com/foo/bar | https://www.ssllabs.com/ssltest/analyze.html?d=example.com
-http://example2.com%{ke:path:escape=false}                      | http://example.com/foo/bar | http://example2.com/foo/bar
-%{ke:origin:escape=false}%{ke:directory:escape=false}           | http://example.com/foo/bar | http://example.com/foo/
-%{ke:origin:escape=false}%{ke:directory:escape=false}           | http://example.com/foo     | http://example.com/
+http://validator.w3.org/checklink?uri=$[ke:location]            | http://example.com/foo/bar | http://validator.w3.org/checklink?uri=http%3A%2F%2Fexample.com%2Ffoo%2Fbar
+http://validator.w3.org/checklink?uri=$[ke:origin]              | http://example.com/foo/bar | http://validator.w3.org/checklink?uri=http%3A%2F%2Fexample.com
+`$[ke:origin:escape=false]/robots.txt`                          | http://example.com/foo/bar | http://example.com/robots.txt
+https://www.ssllabs.com/ssltest/analyze.html?d=$[ke:domain]     | http://example.com/foo/bar | https://www.ssllabs.com/ssltest/analyze.html?d=example.com
+http://example2.com$[ke:path:escape=false]                      | http://example.com/foo/bar | http://example2.com/foo/bar
+`$[ke:origin:escape=false]$[ke:directory:escape=false]`         | http://example.com/foo/bar | http://example.com/foo/
+`$[ke:origin:escape=false]$[ke:directory:escape=false]`         | http://example.com/foo     | http://example.com/
 
 
 ## Installation
@@ -83,6 +83,6 @@ This project adheres to the [Semantic Versioning Specification](http://semver.or
 
 ## License and Copyright
 
-Copyright (C) 2015-2017 Jens Wille
+Copyright (C) 2015-2021 Jens Wille
 
 This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
